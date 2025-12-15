@@ -1,0 +1,66 @@
+#include <iostream>
+#include <fstream>
+#include <cmath>
+
+using namespace std;
+
+int f_id;
+
+// Выбор функции
+double f(double x) {
+    switch (f_id) {
+    case 1:
+        return x * x;          // f(x) = x^2
+    case 2:
+        return sin(x);         // f(x) = sin(x)
+    case 3:
+        return exp(x);         // f(x) = e^x
+    default:
+        return 0.0;
+    }
+}
+
+// Формула Симпсона
+double simpson(double a, double b, int n) {
+    if (n % 2 != 0) {
+        cout << "Error: n must be even for Simpson method\n";
+        return 0;
+    }
+
+    double h = (b - a) / n;
+    double sum = f(a) + f(b);
+
+    for (int i = 1; i < n; i++) {
+        double x = a + i * h;
+        if (i % 2 == 0)
+            sum += 2 * f(x);
+        else
+            sum += 4 * f(x);
+    }
+
+    return sum * h / 3.0;
+}
+
+int main() {
+    ifstream fin("vvod.txt");
+    ofstream fout("vivod.txt");
+
+    if (!fin.is_open()) {
+        cout << "Mistake: cant open vvod.txt\n";
+        return 1;
+    }
+
+    double a, b;
+    int n;
+
+    fin >> f_id;
+    fin >> a >> b;
+    fin >> n;
+
+    double result = simpson(a, b, n);
+
+    fout << "Result = " << result << "\n";
+
+    cout << "Answer create in vivod.txt\n";
+    return 0;
+}
