@@ -1,0 +1,92 @@
+#include <iostream>
+#include <fstream>
+#include <cmath>
+#include <vector>
+using namespace std;
+
+int system_id;
+pair<double, double> phi(double x, double y) {
+    switch (system_id) {
+    case 1:
+        return { cos(y), sin(x) };
+    case 2:
+        return { 0.5 * (x + y), sqrt(4 - x * x) };
+    default:
+        return { x,y };
+    }
+}
+
+bool picard(double& x, double& y, double eps, int max_iter = 1000) {
+    for (int k = 0; k < max_iter; k++) {
+        auto p = phi(x, y);
+        double x_new = p.first;
+        double y_new = p.second;
+        double d = sqrt((x_new - x) * (x_new - x) + (y_new - y) * (y_new - y));
+        x = x_new;
+        y = y_new;
+        if (d < eps) return true;
+    }
+    return false;
+}
+
+int main() {
+    ifstream fin("vvod.txt");
+    ofstream fout("vivod.txt");
+
+    if (!fin.is_open()) {
+        cout << "Mistake: cant open vvod.txt\n";
+        return 1;
+    }
+
+    double a, b, c, d;
+    int M, N;
+    fin >> system_id;
+    fin >> a >> b;
+    fin >> c >> d;
+    fin >> M >> N;
+
+    double eps = 1e-6;
+
+    vector<pair<double, double>> roots;
+
+    double stepX = (b - a) / M;
+    double stepY = (d - c) / N;
+
+    for (int i = 0; i < M; i++) {
+        for (int j = 0; j < N; j++) {
+
+            double x0 = a + i * stepX;
+            double y0 = c + j * stepY;
+
+            double x = x0, y = y0;
+
+            if (picard(x, y, eps)) {
+                bool new_root = true;
+                for (auto& r : roots) {
+                    if (fabs(r.first - x) < 1e-3 &&
+                        fabs(r.second - y) < 1e-3) {
+                        new_root = false;
+                        break;
+                    }
+                }
+                if (new_root) roots.push_back({ x, y });
+            }
+        }
+    }
+
+    cout << "Answer create in vivod.txt\n";
+    for (auto& r : roots) {
+        double x = r.first;
+        double y = r.second;
+
+        auto p = phi(x, y);
+        double r1 = x - p.first;
+        double r2 = y - p.second;
+
+        fout << "x = " << x << ", y = " << y << "\n";
+        fout << "x - phi1(x,y) = " << r1 << "\n";
+        fout << "y - phi2(x,y) = " << r2 << "\n";
+    
+    }
+    return 0;
+}
