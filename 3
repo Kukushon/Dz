@@ -1,0 +1,76 @@
+#include <iostream>
+#include <fstream>
+#include <cmath>
+#include <vector>
+using namespace std;
+
+int f_id;
+double f(double x) {
+    switch (f_id) {
+    case 1:
+        return x * x * x - 5 * x + 1;
+    case 2:
+        return sin(x);
+    case 3:
+        return x * x - 4 * x + 2;
+    default:
+        return 0;
+    }
+}
+
+double sec(double x0, double x1, double eps) {
+    double x2;
+    while (fabs(x1 - x0) > eps) {
+        double f0 = f(x0);
+        double f1 = f(x1);
+        if (f1 == f0) break;
+        x2 = x1 - f1 * (x1 - x0) / (f1 - f0);
+
+        x0 = x1;
+        x1 = x2;
+    }
+    return x1;
+}
+
+int main() {
+    ifstream fin("vvod.txt");
+    ofstream fout("vivod.txt");
+
+    if (!fin.is_open()) {
+        cout << "Mistake: cant open vvod.txt\n";
+        return 1;
+    }
+
+    double a, b;
+    int M;
+    fin >> f_id;
+    fin >> a >> b;
+    fin >> M;
+
+    vector<double> roots;
+
+    double step = (b - a) / M;
+    double x_left = a;
+
+    for (int i = 0; i < M; i++) {
+        double x_right = x_left + step;
+
+        double f1 = f(x_left);
+        double f2 = f(x_right);
+        if (f1 * f2 <= 0) {
+            double root = sec(x_left, x_right, 1e-6);
+            roots.push_back(root);
+        }
+
+        x_left = x_right;
+    }
+
+    cout << "Answer create in vivod.txt\n";
+    for (double r : roots) {
+        fout << "x = " << r << "\n";
+        fout << "f(x) = " << f(r) << "\n";
+        fout << "-----------------------\n";
+    }
+
+    return 0;
+}
