@@ -1,92 +1,119 @@
+1
+1.0 0.0
+0.0 1.0
+0.5 0.5
+
+
 #include <iostream>
 #include <fstream>
-#include <cmath>
 #include <vector>
+#include <cmath>
+
 using namespace std;
 
-int system_id;
-pair<double, double> phi(double x, double y) {
-    switch (system_id) {
-    case 1:
-        return { cos(y), sin(x) };
-    case 2:
-        return { 0.5 * (x + y), sqrt(4 - x * x) };
-    default:
-        return { x,y };
-    }
-}
+const double EPS = 1e-6;
+const int MAX_ITER = 100;
 
-bool picard(double& x, double& y, double eps, int max_iter = 1000) {
-    for (int k = 0; k < max_iter; k++) {
-        auto p = phi(x, y);
-        double x_new = p.first;
-        double y_new = p.second;
-        double d = sqrt((x_new - x) * (x_new - x) + (y_new - y) * (y_new - y));
-        x = x_new;
-        y = y_new;
-        if (d < eps) return true;
-    }
-    return false;
-}
+vector<double> gauss(vector<vector<double>> A, vector<double> b) {
+    int n = A.size();
 
-int main() {
-    ifstream fin("vvod.txt");
-    ofstream fout("vivod.txt");
+    for (int i = 0; i < n; i++) {
+        double div = A[i][i];
+        for (int j = i; j < n; j++) A[i][j] /= div;
+        b[i] /= div;
 
-    if (!fin.is_open()) {
-        cout << "Mistake: cant open vvod.txt\n";
-        return 1;
-    }
-
-    double a, b, c, d;
-    int M, N;
-    fin >> system_id;
-    fin >> a >> b;
-    fin >> c >> d;
-    fin >> M >> N;
-
-    double eps = 1e-6;
-
-    vector<pair<double, double>> roots;
-
-    double stepX = (b - a) / M;
-    double stepY = (d - c) / N;
-
-    for (int i = 0; i < M; i++) {
-        for (int j = 0; j < N; j++) {
-
-            double x0 = a + i * stepX;
-            double y0 = c + j * stepY;
-
-            double x = x0, y = y0;
-
-            if (picard(x, y, eps)) {
-                bool new_root = true;
-                for (auto& r : roots) {
-                    if (fabs(r.first - x) < 1e-3 &&
-                        fabs(r.second - y) < 1e-3) {
-                        new_root = false;
-                        break;
-                    }
-                }
-                if (new_root) roots.push_back({ x, y });
-            }
+        for (int k = i + 1; k < n; k++) {
+            double factor = A[k][i];
+            for (int j = i; j < n; j++) A[k][j] -= factor * A[i][j];
+            b[k] -= factor * b[i];
         }
     }
 
-    cout << "Answer create in vivod.txt\n";
-    for (auto& r : roots) {
-        double x = r.first;
-        double y = r.second;
-
-        auto p = phi(x, y);
-        double r1 = x - p.first;
-        double r2 = y - p.second;
-
-        fout << "x = " << x << ", y = " << y << "\n";
-        fout << "x - phi1(x,y) = " << r1 << "\n";
-        fout << "y - phi2(x,y) = " << r2 << "\n";
-    
+    vector<double> x(n, 0);
+    for (int i = n - 1; i >= 0; i--) {
+        x[i] = b[i];
+        for (int j = i + 1; j < n; j++) {
+            x[i] -= A[i][j] * x[j];
+        }
     }
+    return x;
+}
+
+vector<double> G1(const vector<double>& x) {
+    vector<double> result(2);
+    result[0] = sin(x[1]) - 0.5;
+    result[1] = cos(x[0]) - 0.5;
+    return result;
+}
+
+vector<double> G2(const vector<double>& x) {
+    vector<double> result(2);
+    result[0] = x[1] * x[1] - 0.4;
+    result[1] = sin(x[0]) - 0.2;
+    return result;
+}
+
+vector<double> picard(vector<vector<double>> A, vector<double> x0, int func_num) {
+    int n = A.size();
+    vector<double> x = x0;
+
+    for (int k = 0; k < MAX_ITER; k++) {
+        vector<double> x_old = x;
+
+        vector<double> Gx;
+        if (func_num == 1) Gx = G1(x_old);
+        else Gx = G2(x_old);
+
+        vector<double> b(2);
+        b[0] = -Gx[0];
+        b[1] = -Gx[1];
+
+        x = gauss(A, b);
+
+        double diff = max(fabs(x[0] - x_old[0]), fabs(x[1] - x_old[1]));
+        if (diff < EPS) {
+            break;
+        }
+    }
+
+    return x;
+}
+
+int main() {
+    ifstream in("vvod.txt");
+    if (!in) {
+        cout << "Mistake opened vvod.txt\n";
+        return 1;
+    }
+
+    int func_num;
+    vector<vector<double>> A(2, vector<double>(2));
+    vector<double> x0(2);
+
+    in >> func_num;
+    in >> A[0][0] >> A[0][1] >> A[1][0] >> A[1][1];
+    in >> x0[0] >> x0[1];
+    in.close();
+
+    vector<double> x = picard(A, x0, func_num);
+
+    ofstream out("vivod.txt");
+    out << "x1 = " << x[0] << ", x2 = " << x[1] << "\n";
+
+    vector<double> Gx;
+    if (func_num == 1) Gx = G1(x);
+    else Gx = G2(x);
+
+    double F1 = A[0][0] * x[0] + A[0][1] * x[1] + Gx[0];
+    double F2 = A[1][0] * x[0] + A[1][1] * x[1] + Gx[1];
+
+    out << "Check:\n";
+    out << "F1 = " << F1 << "\n";
+    out << "F2 = " << F2 << "\n";
+
+    out.close();
+
+    cout << "Answer create in vivod.txt\n";
+
     return 0;
 }
