@@ -1,0 +1,89 @@
+#include <iostream>
+#include <vector>
+#include <cmath>
+
+using namespace std;
+
+vector<vector<double>> prmatr(vector<vector<double>> A, vector<vector<double>> B)
+{
+    int n = A.size();
+    vector<vector<double>> C(n, vector<double>(n,0));
+
+    for(int i=0;i<n;i++)
+        for(int j=0;j<n;j++)
+            for(int k=0;k<n;k++)
+                C[i][j]+=A[i][k]*B[k][j];
+    return C;
+}
+
+vector<double> prvect(vector<vector<double>> A, vector<double> x)
+{
+    int n=A.size();
+    vector<double> y(n,0);
+
+    for(int i=0;i<n;i++)
+        for(int j=0;j<n;j++)
+            y[i]+=A[i][j]*x[j];
+    return y;
+}
+
+double sp(vector<vector<double>> A)
+{
+    double s=0;
+    for(int i=0;i<A.size();i++)
+        s+=A[i][i];
+
+    return s;
+}
+
+int main()
+{
+    int n;
+    cout<<"Введите размер матрицы: ";
+    cin>>n;
+
+    vector<vector<double>> A(n,vector<double>(n));
+
+    cout<<"Введите матрицу:\n";
+    for(int i=0;i<n;i++)
+        for(int j=0;j<n;j++)
+            cin>>A[i][j];
+
+    vector<vector<double>> Ak=A;
+    double lambda_old=0;
+    double eps=1e-8;
+    double lambda;
+
+    for(int k=1;k<50;k++)
+    {
+        double spk=sp(Ak);
+
+        vector<vector<double>> Ak1=prmatr(Ak,A);
+        double spk1=sp(Ak1);
+
+        lambda=spk1/spk;
+
+        if(fabs(lambda-lambda_old)<eps)
+        {
+            Ak=Ak1;
+            break;
+        }
+
+        lambda_old=lambda;
+        Ak=Ak1;
+    }
+
+    vector<double> y(n,1);
+
+    vector<double> x=prvect(Ak,y);
+
+    cout<<"Старшее собственное значение λ ≈ "<<lambda<<endl;
+
+    cout<<"Собственный вектор x:\n";
+    for(double v:x)
+        cout<<v<<" ";
+
+    cout<<endl;
+
+    return 0;
+}
