@@ -1,0 +1,9 @@
+s = input("Введите символы: ")
+numbers = "123456789"
+for char in s:
+    if char in numbers:
+        numbers = numbers.replace(char, "")
+if numbers == "":
+    print(0)
+else:
+    print(int(numbers))
