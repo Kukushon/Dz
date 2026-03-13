@@ -1,11 +1,12 @@
 #include <iostream>
-#include <vector>
-#include <cmath>
 #include <fstream>
+#include <vector>
+#include <sstream>
+#include <cmath>
 
 using namespace std;
 
-vector<vector<double>> prmatr(vector<vector<double>> A, vector<vector<double>> B)
+vector<vector<double>> mult(const vector<vector<double>>& A, const vector<vector<double>>& B)
 {
     int n = A.size();
     vector<vector<double>> C(n, vector<double>(n, 0));
@@ -16,7 +17,7 @@ vector<vector<double>> prmatr(vector<vector<double>> A, vector<vector<double>> B
     return C;
 }
 
-vector<double> prvect(vector<vector<double>> A, vector<double> x)
+vector<double> multVec(const vector<vector<double>>& A, const vector<double>& x)
 {
     int n = A.size();
     vector<double> y(n, 0);
@@ -26,7 +27,7 @@ vector<double> prvect(vector<vector<double>> A, vector<double> x)
     return y;
 }
 
-double sp(vector<vector<double>> A)
+double sp(const vector<vector<double>>& A)
 {
     double s = 0;
     for (int i = 0; i < A.size(); i++)
@@ -38,42 +39,60 @@ int main()
 {
     ifstream fin("vvod.txt");
     ofstream fout("vivod.txt");
-    int n;
-    fin >> n;
-    vector<vector<double>> A(n, vector<double>(n));
 
-    for (int i = 0; i < n; i++)
-        for (int j = 0; j < n; j++)
-            fin >> A[i][j];
+    vector<vector<double>> A;
+    string line;
 
-    vector<vector<double>> Ak = A;
-    double lambda_old = 0;
-    double eps = 1e-8;
-    double lambda;
-
-    for (int k = 1; k < 50; k++)
+    while (getline(fin, line))
     {
-        double spk = sp(Ak);
-        vector<vector<double>> Ak1 = prmatr(Ak, A);
-        double spk1 = sp(Ak1);
-        lambda = spk1 / spk;
-        if (fabs(lambda - lambda_old) < eps)
-        {
-            Ak = Ak1;
-            break;
-        }
-        lambda_old = lambda;
-        Ak = Ak1;
+        stringstream ss(line);
+        vector<double> row;
+        double val;
+
+        while (ss >> val)
+            row.push_back(val);
+
+        if (!row.empty())
+            A.push_back(row);
     }
 
-    vector<double> y(n, 1);
-    vector<double> x = prvect(Ak, y);
-    fout << lambda << endl;
+    int n = A.size();
 
+
+    int p = 3;
+    vector<vector<double>> Ak = A;
+
+    for (int i = 0; i < p; i++)
+        Ak = mult(Ak, Ak);
+    vector<vector<double>> Ak1 = mult(Ak, A);
+
+    double spk = sp(Ak);
+    double spk1 = sp(Ak1);
+
+    double lambda = spk1 / spk;
+
+    fout << "lambda = " << lambda << endl;
+
+    vector<double> x(n, 1);
+
+    for (int iter = 0; iter < 20; iter++)
+    {
+        vector<double> y = multVec(A, x);
+
+        double norm = fabs(y[0]);
+        for (int i = 1; i < n; i++)
+            if (fabs(y[i]) > norm)
+                norm = fabs(y[i]);
+
+        for (int i = 0; i < n; i++)
+            x[i] = y[i] / norm;
+    }
+
+    fout << "vector: ";
     for (double v : x)
         fout << v << " ";
     fin.close();
     fout.close();
-    cout << "Successfully";
+    cout << "OK";
     return 0;
 }
