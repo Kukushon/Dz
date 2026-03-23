@@ -1,0 +1,54 @@
+#include <iostream>
+#include <cmath>
+using namespace std;
+
+// Функция
+double f(double x) {
+    return x * x - 6 * x + 13;
+}
+
+int main() {
+    double a = 0.0;
+    double b = 10.0;
+
+    double eps = 0.5;   // используется в формулах y и z
+    double L = 1.0;     // условие остановки (как в учебнике)
+
+    int k = 0;
+
+    // Цикл: пока длина интервала больше L
+    while ((b - a) > L) {
+
+        // Точки дихотомии
+        double y = (a + b - eps) / 2.0;
+        double z = (a + b + eps) / 2.0;
+
+        double fy = f(y);
+        double fz = f(z);
+
+        cout << "Итерация " << k << endl;
+        cout << "y = " << y << "  z = " << z << endl;
+        cout << "f(y) = " << fy << "  f(z) = " << fz << endl;
+
+        // Сужаем интервал
+        if (fy < fz) {
+            b = z;
+        } else {
+            a = y;
+        }
+
+        cout << "Новый интервал: [" << a << "; " << b << "]" << endl;
+        cout << "Длина: " << b - a << endl << endl;
+
+        k++;
+    }
+
+    // Приближённое решение — середина интервала
+    double x_opt = (a + b) / 2.0;
+
+    cout << "Ответ:" << endl;
+    cout << "x* = " << x_opt << endl;
+    cout << "f(x*) = " << f(x_opt) << endl;
+
+    return 0;
+}
