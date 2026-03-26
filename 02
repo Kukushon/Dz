@@ -35,7 +35,6 @@ int main() {
             }
         }
 
-        // находим компоненту, которая не близка к нулю
         int index = 0;
         for (int i = 0; i < n; i++) {
             if (fabs(y_prev[i]) > 1e-8) {
@@ -44,10 +43,8 @@ int main() {
             }
         }
 
-        // отношение компонент
         lambda_new = y[index] / y_prev[index];
 
-        // проверка сходимости
         if (fabs(lambda_new - lambda) < eps) {
             lambda = lambda_new;
             break;
@@ -55,7 +52,6 @@ int main() {
 
         lambda = lambda_new;
 
-        // нормировка (чтобы не разлетелось)
         double norm = 0.0;
         for (int i = 0; i < n; i++) {
             norm += y[i] * y[i];
