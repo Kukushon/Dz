@@ -71,4 +71,4 @@ while len(nums) > 1:
     cost += 0.05 * s
     nums.append(s)
 with open("output.txt", "w") as f:
-    f.write(f"{cost:.2f}")
+    f.write("%.2f"%cost)
