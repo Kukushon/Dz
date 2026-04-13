@@ -26,7 +26,7 @@ def older30(year,month,day):
             return True
         return False
 
-df_bank['older30'] = df_bank[['Year','Month', apply(lambda x: older30(x[0], x[1], x[2]), axis-1)
+df_bank['older30'] = df_bank[['Year','Month']].apply(lambda x: older30(x[0], x[1], x[2]), axis=1)
 df_older30 = df_bank[df_bank['older30'] == True]
 print (f'средний доход клиентов старше 30 лет: {df_older30.Income.mean()}\n')
     
