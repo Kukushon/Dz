@@ -130,3 +130,58 @@ int main() {
 
     return 0;
 }
+
+#include <iostream>
+#include <cmath>
+using namespace std;
+
+// Функция
+double f(double x) {
+    return x*x - 6*x + 13;
+}
+
+int main() {
+    double a = 0;        // левая граница
+    double b = 10;       // правая граница
+    double eps = 0.5;    // точность (длина интервала)
+    double delta = 0.2;  // маленький сдвиг (если нужен)
+
+    const double phi = (1 + sqrt(5)) / 2;
+    const double r = 2 - phi; // ≈ 0.382
+
+    int k = 0;
+
+    cout << "Начальный интервал: [" << a << ", " << b << "]\n";
+
+    while ((b - a) > eps) {
+        // вычисляем точки
+        double x1 = a + r * (b - a);
+        double x2 = b - r * (b - a);
+
+        cout << "\nШаг " << k << ":\n";
+        cout << "a = " << a << ", b = " << b << endl;
+        cout << "x1 = " << x1 << ", f(x1) = " << f(x1) << endl;
+        cout << "x2 = " << x2 << ", f(x2) = " << f(x2) << endl;
+
+        // сравнение
+        if (f(x1) <= f(x2)) {
+            cout << "f(x1) <= f(x2) → сдвигаем правую границу\n";
+            b = x2;
+        } else {
+            cout << "f(x1) > f(x2) → сдвигаем левую границу\n";
+            a = x1;
+        }
+
+        k++;
+    }
+
+    // итог
+    double x_min = (a + b) / 2;
+    double error = (b - a) / 2;
+
+    cout << "\nФинальный интервал: [" << a << ", " << b << "]\n";
+    cout << "Минимум x ≈ " << x_min << " ± " << error << endl;
+    cout << "f(x) ≈ " << f(x_min) << endl;
+
+    return 0;
+}
