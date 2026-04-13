@@ -10,7 +10,36 @@ df_bank.pop("Loan_Balance')
 df_bank = pd.get_dummies(df_bank, columns-["Profession'])
 df_bank. to_sv(bank_data_new.csv')
 
+df_bank['Date'] = pd.to_datetime(df_bank['Date'])
+df_bank['Year'] = df_bank['Date'].dt.year
+df_bank['Month'] = df_bank['Date'].dt.month
+df_bank['Day'] = df_bank['Date'].dt.day
 
+def older30(year,month,day):
+    current_year =  pd.to_datetime('now').year
+    current_month =  pd.to_datetime('now').month
+    current_day =  pd.to_datetime('now').day
+    if current_year - year > 30:
+        if current_month > month:
+            return True
+        if(month==current_month)&(day<=current_day):
+            return True
+        return False
+
+df_bank['older30'] = df_bank[['Year','Month', apply(lambda x: older30(x[0], x[1], x[2]), axis-1)
+df_older30 = df_bank[df_bank['older30'] == True]
+print (f'средний доход клиентов старше 30 лет: {df_older30.Income.mean()}\n')
+    
+df_by_profession = df_bank.groupby('Profession')['Loan_Balance'].agg(['count','sum'])
+df_by_profession['средняя сумма кредита'] = df_by_profession['sum'] / df_by_profession['count']
+print (df_by_profession,"\n")
+
+df_bank['Loan_Balance_norm']=(df_bank['Loan_Balance'] - df_bank['Loan_Balance'].mean()) / (df_bank['Loan_Balance'].std())
+
+df_bank.pop('Date')
+df_bank.pop('Loan_Balance')
+df_bank = pd.get_dummies(df_bank, columns=['Profession'])
+df_bank.to_sv(bank_data_new.csv')
 
 
 !!!!!!!!!!!!1.0.5.1. Информация для последующих заданий
