@@ -172,15 +172,14 @@ int main() {
         double z = a + b - y;
 
         cout << "\nШаг " << k << ":\n";
-        cout << "a = " << a << ", b = " << b << endl;
-        cout << "y = " << y;
-        cout << "z = " << z << "f(z) = " << f(z) << endl;
+        cout << "f(y) = " << f(y) << endl;
+        cout << "f(z) = " << f(z) << endl;
 
         // сравнение
         if (f(y) <= f(z)) {
             cout << "f(y) <= f(z) b = z\n";
             b = z;
-            cout << "f(y) = " << f(y) << endl;
+						cout << "a = " << a << ", b = " << b;
         }
         else {
             cout << "f(y) > f(z) a = y\n";
