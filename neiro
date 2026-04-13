@@ -9,3 +9,27 @@ df_bank-pop"Date')
 df_bank.pop("Loan_Balance')
 df_bank = pd.get_dummies(df_bank, columns-["Profession'])
 df_bank. to_sv(bank_data_new.csv')
+
+
+
+
+!!!!!!!!!!!!1.0.5.1. Информация для последующих заданий
+### Type your code here
+tr_mcc_codes=pd.read_csv('tr_mcc_codes.csv',sep=';')
+tr_types=pd.read_csv("tr_types.csv",sep=';')
+transactions=pd.read_csv("transactions.csv",sep=',',nrows=1000000)
+gender_train=pd.read_csv("gender_train.csv",sep=',')
+
+
+
+transactions =transactions.set_index('customer_id')
+
+!!!!!!!!!!!!!!1.0.6. Task 6.
+### Type your code here
+max_id=transactions['amount'].idxmax()
+print(f'клиент с максимальной суммой транзакций:{max_id}')
+
+transactions_for_maxclient=transactions.loc[max_id].copy()
+transactions_for_maxclient['amount']=abs(transactions_for_maxclient['amount'])
+amount_counts=transactions_for_maxclient['amount'].value_counts().to_dict()
+print(f'наиболее встречающийся модуль суммы транзакций:{max(amount_counts,key=amount_counts.get)}({max(amount_counts.values())}раз)')
