@@ -9,6 +9,7 @@ df_bank-pop"Date')
 df_bank.pop("Loan_Balance')
 df_bank = pd.get_dummies(df_bank, columns-["Profession'])
 df_bank. to_sv(bank_data_new.csv')
+----------------------------
 
 df_bank['Date'] = pd.to_datetime(df_bank['Date'])
 df_bank['Year'] = df_bank['Date'].dt.year
@@ -40,21 +41,17 @@ df_bank.pop('Date')
 df_bank.pop('Loan_Balance')
 df_bank = pd.get_dummies(df_bank, columns=['Profession'])
 df_bank.to_sv(bank_data_new.csv')
+-------------------------------------
 
-
-!!!!!!!!!!!!1.0.5.1. Информация для последующих заданий
-### Type your code here
 tr_mcc_codes=pd.read_csv('tr_mcc_codes.csv',sep=';')
 tr_types=pd.read_csv("tr_types.csv",sep=';')
 transactions=pd.read_csv("transactions.csv",sep=',',nrows=1000000)
 gender_train=pd.read_csv("gender_train.csv",sep=',')
-
-
+-------------------------------------
 
 transactions =transactions.set_index('customer_id')
+------------------------------------
 
-!!!!!!!!!!!!!!1.0.6. Task 6.
-### Type your code here
 max_id=transactions['amount'].idxmax()
 print(f'клиент с максимальной суммой транзакций:{max_id}')
 
@@ -62,3 +59,110 @@ transactions_for_maxclient=transactions.loc[max_id].copy()
 transactions_for_maxclient['amount']=abs(transactions_for_maxclient['amount'])
 amount_counts=transactions_for_maxclient['amount'].value_counts().to_dict()
 print(f'наиболее встречающийся модуль суммы транзакций:{max(amount_counts,key=amount_counts.get)}({max(amount_counts.values())}раз)')
+-------------------------------------
+
+tr_mcc_codes = pd.read_csv('tr_mcc_codes.csv', sep=';')
+tr_types = pd.read_csv("tr_types.csv", sep=';')
+transactions = pd.read_csv("transactions.csv", sep=',',nrows = 1000000)
+gender_train = pd.read_csv("gender_train.csv", sep=',')
+
+df = pd.merge(transactions, gender_train, on='customre_id', how='left')
+df = pd.merge(df, tr_mcc_codes, on= 'mcc_code', how='inner')
+df = pd.merge(df, tr_types, on='tr_type', how='inner')
+del tr_mcc_codes
+del tr_types
+del gender_train
+print (f"размер: {df.shape}")
+df[['tr_day', 'tr_time']] = df['tr_datetime'].str.split(' ', expand=True)
+--------------------------------------
+
+expenses = df[df['amount'] < 0]['amount']
+expense_buckets = pd.qcut(expenses, q=5, labels=['Very High', 'High', 'Middle', 'Low', 'Very Low'])
+df['amount_bucket'] = None
+df.loc[df['amount'] < 0, 'amount_bucket'] = expense_buckets.values
+
+df['amount_bucket'] = df['amount_bucket'].astype('category')
+df['amount_bucket'] = df['amount_bucket'].cat.add_categories(['Income'])
+df['amount_bucket'] = df['amount_bucket'].fillna('Income')
+print(df[['amount', 'amount_bucket']])
+------------------------------------------
+
+df['tr_hour'] = df['tr_time'].str.split(':').str[0]
+print(df[['tr_hour', 'tr_tie']].head(10))
+------------------------------------------
+
+pivot = pd.pivot_table(df, index='tr_hour', columns='amount_buscket', values='gender', aggfunc='mean', observed=False)
+print(pivot)
+-----------------------------------------
+
+def plot_pivot_table(pivot_table):
+    plt.figure(figsize=(12,8))
+    sns.heatmap(pivot_table,annot True, fmt='f', cmap='Blues',linewidths=0.5, cbar_kws={'label':'процент мужских транзакций'})
+
+    plt.title('Тепловая карта')
+    plt.xlabel('')
+    plt.ylabel('час')
+    plt.tight_layout()
+    plt.show()
+
+plot_pivot_table(pivot)
+-------------------------------------------
+
+df['tr_day'] = df['tr_day'].astype(int)
+mcc_counts = df['mcc_code'].value_counts().to_dict()
+mCc_60 = [mcc for mcc, count in mcc_counts.items() if count > 60000]
+filtered_df = df[df['mcc code'].isin(mcc_60)]
+print(f'МСС коды, которые встретилисы более чем 60000 раз: {mcc_60}')
+
+grouped_df = filtered_df.groupby('tr_day', 'mcc_code'])['amount'].mean().reset_index()
+grouped_df = grouped_df.rename(columns={'amount':'avg_amount'})
+print (grouped_df)
+----------------------------------------------
+
+grouped_series = filtered_df.groupby(['tr_day','mcc_code'])['amount'].mean()
+pivot_data = grouped_series.unstack()
+plt.figure(figsize = (15,8))
+for column in pivot_data.columns:
+    plt.plot(pivot_data.index,pivot_data[column], linewidth=1.5,markersiize=3,label=column)
+plt.xlabel('день')
+plt.ylabel('средняя сумма')
+plt.title('зависимость срдних сумм по МСС кодам')
+plt.legend(bbox_to_anchor=(0.9, 1), loc='upper left', fontsize=10)
+plt.tight_layot()
+plt.show()
+-----------------------------------------------
+
+filtered_df.loc[:, 'mcc description'] = filtered_df['mcc_description'].astype(str)
+finance_df = filtered_df[filtered_df['mcc_description'].str.contains('Финансовые институты', na=False)]
+print (f"MCC-коды связаные с финансовыми институтами: {finance_df['mcc_code'].unique()}")
+
+nal_df = filtered_df[filtered_df['mcc_description'].str.contains('снятие наличности')]
+print (f"MCC-коды связаные со снятием наличности: {nal_df['mcc_code'].unique()}")
+
+bak_df = filtered_df[filtered_df['mcc description'].str.contains('Бакалейные магазины')]
+print(f"MCC-коды связаные с бакалейными магазинами: {bak_df['mcc_code'].unique()}")
+
+df_calls = filtered_df[filtered_df['mcc_description'].str.contains('Звонки с использованием телефонов, считывающих магнитную ленту')]
+print(f"Звонки с использованием телефонов, считывающих магнитную ленту: {df_calls['mcc_code'].unique()}")
+-----------------------------------------------
+
+df = pd.read_csv('winemag-data-130k-v2.csv', on_bad_lines='skip')
+print(df.tail(5))
+-----------------------------------------------
+
+df.plot.scatter(x='points',y='price',alpha=0.5,figsize=(16,5))
+plt.title('зависимость цены от рейтинга')
+plt.xlabel('рейтинг (point)')
+plt.ylabel('цена (price)')
+plt.show()
+----------------------------------------------
+
+plt.figure(figsize=(10,6))
+country_wines=df['country'].values_counts()
+country_wines.plot(kind='bar', color='skyblue', edgecolor='black')
+plt.title('количество вин по странам')
+plt.xlabel('страна')
+plt.ylabel('количество вин')
+plt.xticks(rotation=45,ha='right')
+plt.tight_layot()
+plt.show()
