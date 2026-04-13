@@ -1,20 +1,12 @@
-df=pd.read_csv('titanic.csv')
-def age_category(age):
-    if age<18:
-            return "дети"
-    elif age<60:
-        return "взрослые"
-    return "пенсионеры"
-df['Возрастная_категория']=df['Age'].apply(age_category)
-survival_by_age=df.groupby('Возрастная_категория')['Survived'].agg(['count','sum'])
-survival_by_age['Доля_выживших']=survival_by_age['sum']/survival_by_age['count']*100
-print(survival_by_age['Доля_выживших'],"\n")
+df_bank=pd.read_csv('bank_data.csv')
 
-df=df.rename(columns={'Pclass':'Класс_билета','Sex':'Пол'})
-survival_by_pclass=df.groupby('Класс_билета')['Survived'].agg(['count','sum'])
-survival_by_pclass['Доля_выживших']=survival_by_pclass['sum']/survival_by_pclass['count']*100
-print(survival_by_pclass['Доля_выживших'],"\n")
+print(df_bank.head(5))
+print(df_bank.shape)
+print(f'общее число клиентов банка:{len(df_bank)}')
+print(f'количество уникальных профессий:{df_bank['Profession'].nunique()}')
 
-survival_by_sex=df.groupby('Пол')['Survived'].agg(['count','sum'])
-survival_by_sex['Доля_выживших']=survival_by_sex['sum']/survival_by_sex['count']*100
-print(survival_by_sex['Доля_выживших'])
+na_per_column=df_bank.isna().sum()
+print("\nколичество пропусков в каждом столбце",na_per_column)
+
+df_bank['Income']=df_bank['Income'].fillna(df_bank.Income.mean())
+print(df_bank.head(5))
