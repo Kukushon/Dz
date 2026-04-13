@@ -179,7 +179,6 @@ int main() {
         if (f(y) <= f(z)) {
             cout << "f(y) <= f(z) b = z\n";
             b = z;
-						cout << "a = " << a << ", b = " << b;
         }
         else {
             cout << "f(y) > f(z) a = y\n";
