@@ -1,22 +1,20 @@
-df = pd. read_csv('titanic.csv')
-Используя датасет Titanic, провести Exploratory Data Analysis (EDA) (с помощью описательной статистики), выявить основные ф выживаемость пассажиров, рассчитать долю спасённых мужчин и женщин.
-def
-age_category (age) :
-if
-age < 18:
-return "дети"
-elif age < 60:
-return "взрослые" return "пенсионеры"
-df[ 'Возрастная_категория* ] = df["Age*]-apply(age_category)
-survival_by_age - df groupby ('Возрастная_категория") [Survived'].agg(count',
-survival_by_age[ "Доля _выживших" ]
-print (survival_by_age|"Доля_выживших"). "V")
-- survival_by_age|sum*] / survival_by_age|"count"]* 100
-dt = df. rename (columns-['Pclass': "Класс_билета"
-"Sex": "Пол"))
-survival_by_pclass = df groupby ('Класс_билета") ['Survived] agg(i count', ' sum'])
-survival_by_pclass['Доля_выживших ) = survival_by_pclass| sum'] / survival_by_pclass|"count*) * 100
-print (survival_by_pclass["Доля_выживших"], "\n")
-survival_by_sex = df. groupby ("Пол")[Survived .age([count', sum'])
-survival_by_sex 'Доля_выживших"] = survival_by_sex'sum*] / survival_by_sex'count"] * 100
-print (survival_by_sex[ Доля_выживших" ])
+df=pd.read_csv('titanic.csv')
+def age_category(age):
+    if age<18:
+            return "дети"
+    elif age<60:
+        return "взрослые"
+    return "пенсионеры"
+df['Возрастная_категория']=df['Age'].apply(age_category)
+survival_by_age=df.groupby('Возрастная_категория')['Survived'].agg(['count','sum'])
+survival_by_age['Доля_выживших']=survival_by_age['sum']/survival_by_age['count']*100
+print(survival_by_age['Доля_выживших'],"\n")
+
+df=df.rename(columns={'Pclass':'Класс_билета','Sex':'Пол'})
+survival_by_pclass=df.groupby('Класс_билета')['Survived'].agg(['count','sum'])
+survival_by_pclass['Доля_выживших']=survival_by_pclass['sum']/survival_by_pclass['count']*100
+print(survival_by_pclass['Доля_выживших'],"\n")
+
+survival_by_sex=df.groupby('Пол')['Survived'].agg(['count','sum'])
+survival_by_sex['Доля_выживших']=survival_by_sex['sum']/survival_by_sex['count']*100
+print(survival_by_sex['Доля_выживших'])
