@@ -53,3 +53,80 @@ int main() {
 
     return 0;
 }
+
+#include <iostream>
+#include <vector>
+#include <cmath>
+using namespace std;
+
+// функция
+double f(double x) {
+    return x*x - 6*x + 13;
+}
+
+int main() {
+    double a = 0;
+    double b = 10;
+    double eps = 0.5;
+
+    // --- строим числа Фибоначчи ---
+    vector<int> F = {1, 1};
+    while (F.back() < (b - a) / eps) {
+        F.push_back(F[F.size()-1] + F[F.size()-2]);
+    }
+
+    int N = F.size(); // количество чисел
+
+    cout << "N = " << N << endl;
+    cout << "Начальный интервал: [" << a << ", " << b << "]\n";
+
+    // --- начальные точки ---
+    double x1 = a + (double)F[N-3] / F[N-1] * (b - a);
+    double x2 = a + (double)F[N-2] / F[N-1] * (b - a);
+
+    double f1 = f(x1);
+    double f2 = f(x2);
+
+    // --- основной цикл ---
+    for (int k = 1; k <= N - 2; k++) {
+        cout << "\nШаг " << k << ":\n";
+        cout << "a = " << a << ", b = " << b << endl;
+        cout << "x1 = " << x1 << ", f(x1) = " << f1 << endl;
+        cout << "x2 = " << x2 << ", f(x2) = " << f2 << endl;
+
+        if (f1 <= f2) {
+            cout << "f(x1) <= f(x2) → сдвигаем правую границу\n";
+            b = x2;
+            x2 = x1;
+            f2 = f1;
+
+            x1 = a + (double)F[N-k-3] / F[N-k-1] * (b - a);
+            f1 = f(x1);
+        } else {
+            cout << "f(x1) > f(x2) → сдвигаем левую границу\n";
+            a = x1;
+            x1 = x2;
+            f1 = f2;
+
+            x2 = a + (double)F[N-k-2] / F[N-k-1] * (b - a);
+            f2 = f(x2);
+        }
+    }
+
+    // финальный шаг (с δ)
+    double delta = 0.2;
+    double x_star;
+
+    if (f1 < f2)
+        x_star = x1;
+    else
+        x_star = x2;
+
+    double error = (b - a) / 2;
+
+    cout << "\nФинальный интервал: [" << a << ", " << b << "]\n";
+    cout << "Минимум x ≈ " << x_star << " ± " << error << endl;
+    cout << "f(x) ≈ " << f(x_star) << endl;
+
+    return 0;
+}
