@@ -1,3 +1,4 @@
+1.0.4. Task 4
 df_bank=pd.read_csv('bank_data.csv')
 
 print(df_bank.head(5))
@@ -10,3 +11,15 @@ print("\nколичество пропусков в каждом столбце"
 
 df_bank['Income']=df_bank['Income'].fillna(df_bank.Income.mean())
 print(df_bank.head(5))
+
+
+
+
+1.0.5.1. Информация для последующих заданий¶
+tr_mcc_codes=pd.read_csv('tr_mcc_codes.csv',sep=';')
+tr_types=pd.read_csv("tr_types.csv",sep=';')
+transactions=pd.read_csv("transactions.csv",sep=',',nrows=1000000)
+gender_train=pd.read_csv("gender_train.csv",sep=',')
+
+transactions =transactions.set_index('customer_id')
+1.0.6. Task 6.
