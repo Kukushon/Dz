@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cmath>
+#include <iomanip>
 using namespace std;
 
 double f(double x) {
@@ -21,7 +22,7 @@ int main() {
 
         double fy = f(y);
         double fz = f(z);
-
+        cout << fixed << setprecision(2);
         // Считаем точки
         cout << "Итерация " << k << endl;
         cout << "y = " << y << "  z = " << z << endl;
@@ -43,6 +44,16 @@ int main() {
 
         k++;
     }
+
+    // Приближённое решение - середина интервала
+    double x_opt = (a + b) / 2.0;
+    double pogr = (b - a) / 2.0;
+    cout << "Ответ:" << endl;
+    cout << "x* = " << x_opt << " +- " << pogr << endl;
+    cout << "f(x*) = " << f(x_opt) << endl;
+
+    return 0;
+}
 
     // Приближённое решение - середина интервала
     double x_opt = (a + b) / 2.0;
