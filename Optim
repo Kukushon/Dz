@@ -115,15 +115,6 @@ int main() {
     return 0;
 }
 
-    // Приближённое решение - середина интервала
-    double x_opt = (a + b) / 2.0;
-
-    cout << "Ответ:" << endl;
-    cout << "x* = " << x_opt << " +- 0,5" << endl;
-    cout << "f(x*) = " << f(x_opt) << endl;
-
-    return 0;
-}
 
 #include <iostream>
 #include <vector>
