@@ -57,7 +57,7 @@ int main() {
     return 0;
 }
 
-
+//Метод дихотомии
 #include <iostream>
 #include <cmath>
 #include <iomanip>
@@ -84,22 +84,22 @@ int main() {
         double fz = f(z);
         cout << fixed << setprecision(2);
         // Считаем точки
-        cout << "Итерация " << k << endl;
-        cout << "y = " << y << "  z = " << z << endl;
-        cout << "f(y) = " << fy << "  f(z) = " << fz << endl;
+        cout << "Шаг " << k << endl;
+        cout << "y = " << y << "\tz = " << z << endl;
+        cout << "f(y) = " << fy << "\tf(z) = " << fz << endl;
 
         // Сужаем интервал
         if (fy < fz) {
             b = z;
-            cout << "f(y) < f(z), b = z" << endl;
+            cout << "f(y) < f(z)\tb = z" << endl;
         }
         else {
             a = y;
-            cout << "f(y) > f(z), a = y" << endl;
+            cout << "f(y) > f(z)\ta = y" << endl;
         }
 
         // Выводим полученный отрезок 
-        cout << "Новый интервал: [" << a << "; " << b << "]" << endl;
+        cout << "L = [" << a << "; " << b << "]" << endl;
         cout << "Длина: " << b - a << endl << endl;
 
         k++;
@@ -115,137 +115,92 @@ int main() {
     return 0;
 }
 
-
+//Метод Фиббоначи
 #include <iostream>
 #include <vector>
 #include <cmath>
-using namespace std;
-
-// функция
-double f(double x) {
-    return x*x - 6*x + 13;
-}
-
-int main() {
-    double a = 0;
-    double b = 10;
-    double eps = 0.5;
-
-    // --- строим числа Фибоначчи ---
-    vector<int> F = {1, 1};
-    while (F.back() < (b - a) / eps) {
-        F.push_back(F[F.size()-1] + F[F.size()-2]);
-    }
-
-    int N = F.size(); // количество чисел
-
-    cout << "N = " << N << endl;
-    cout << "Начальный интервал: [" << a << ", " << b << "]\n";
-
-    // --- начальные точки ---
-    double x1 = a + (double)F[N-3] / F[N-1] * (b - a);
-    double x2 = a + (double)F[N-2] / F[N-1] * (b - a);
-
-    double f1 = f(x1);
-    double f2 = f(x2);
-
-    // --- основной цикл ---
-    for (int k = 1; k <= N - 2; k++) {
-        cout << "\nШаг " << k << ":\n";
-        cout << "a = " << a << ", b = " << b << endl;
-        cout << "x1 = " << x1 << ", f(x1) = " << f1 << endl;
-        cout << "x2 = " << x2 << ", f(x2) = " << f2 << endl;
-
-        if (f1 <= f2) {
-            cout << "f(x1) <= f(x2) → сдвигаем правую границу\n";
-            b = x2;
-            x2 = x1;
-            f2 = f1;
-
-            x1 = a + (double)F[N-k-3] / F[N-k-1] * (b - a);
-            f1 = f(x1);
-        } else {
-            cout << "f(x1) > f(x2) → сдвигаем левую границу\n";
-            a = x1;
-            x1 = x2;
-            f1 = f2;
-
-            x2 = a + (double)F[N-k-2] / F[N-k-1] * (b - a);
-            f2 = f(x2);
-        }
-    }
-
-    // финальный шаг (с δ)
-    double delta = 0.2;
-    double x_star;
-
-    if (f1 < f2)
-        x_star = x1;
-    else
-        x_star = x2;
-
-    double error = (b - a) / 2;
-
-    cout << "\nФинальный интервал: [" << a << ", " << b << "]\n";
-    cout << "Минимум x ≈ " << x_star << " ± " << error << endl;
-    cout << "f(x) ≈ " << f(x_star) << endl;
-
-    return 0;
-}
-
-#include <iostream>
-#include <cmath>
 #include <iomanip>
-using namespace std;
 
-// Функция
 double f(double x) {
     return x * x - 6 * x + 13;
 }
 
 int main() {
-    setlocale(LC_ALL, "ru");
-    double a = 0;        // левая граница
-    double b = 10;       // правая граница
-    double eps = 0.5;    // точность (длина интервала)
+    std::setlocale(LC_ALL, "ru");
 
-    const double phi = (1 + sqrt(5)) / 2;
-    const double r = 2 - phi; // ≈ 0.382
-
-    int k = 0;
-
-    cout << fixed << setprecision(2);
-    cout << "Начальный интервал: [" << a << ", " << b << "]\n";
-
-    while ((b - a) > eps) {
-        // вычисляем точки
-        double y = a + r * (b - a);
-        double z = a + b - y;
-
-        cout << "\nШаг " << k << ":\n";
-        cout << "f(y) = " << f(y) << endl;
-        cout << "f(z) = " << f(z) << endl;
-
-        // сравнение
-        if (f(y) <= f(z)) {
-            cout << "f(y) <= f(z) b = z\n";
-            b = z;
-        }
-        else {
-            cout << "f(y) > f(z) a = y\n";
-            a = y;
-        }
-        cout << "L = [" << a << " " << b << "]" << endl;
-        k++;
+    double a = 0.0;
+    double b = 10.0;
+    double L = 1.0;
+    std::vector<int> F = { 1, 1 };
+    while (F.back() < (b - a) / L) {
+        F.push_back(F[F.size() - 1] + F[F.size() - 2]);
     }
 
-    // итог
-    double x_min = (a + b) / 2;
-    double pogr = (b - a) / 2;
+    int N = F.size() - 1;
 
-    cout << "\nФинальный интервал: [" << a << ", " << b << "]\n";
-    cout << "Минимум x = " << x_min << " +- " << pogr << endl;
-    cout << "f(x) = " << f(x_min) << endl;
+    std::cout << "N = " << N << "\n\n";
+
+    //Начальные точки
+    double y = a + (double)F[N - 2] / F[N] * (b - a);
+    double z = a + (double)F[N - 1] / F[N] * (b - a);
+
+    double fy = f(y);
+    double fz = f(z);
+
+    std::cout << std::fixed << std::setprecision(3);
+
+    //Основной цикл
+    for (int k = 1; k <= N - 3; k++) {
+
+        std::cout << "Шаг " << k << "\n";
+        std::cout << "a = " << a << "\tb = " << b << "\n";
+        std::cout << "y = " << y << "\tz = " << z << "\n";
+        std::cout << "f(y) = " << fy << "\tf(z) = " << fz << "\n";
+
+        if (fy < fz) {
+            b = z;
+            z = y;
+            fz = fy;
+
+            y = a + (double)F[N - k - 2] / F[N - k] * (b - a);
+            fy = f(y);
+
+            std::cout << "f(y) < f(z)\n";
+        }
+        else {
+            a = y;
+            y = z;
+            fy = fz;
+
+            z = a + (double)F[N - k - 1] / F[N - k] * (b - a);
+            fz = f(z);
+
+            std::cout << "f(y) > f(z)\n";
+        }
+
+        std::cout << "Интервал: [" << a << "; " << b << "]\n\n";
+    }
+
+    //Финальный шаг
+    double eps = 0.5;
+    double z_final = y + eps;
+    double fy_final = f(y);
+    double fz_final = f(z_final);
+    std::cout << "f(y) = " << fy_final << "\tf(z) = " << fz_final << "\n";
+    if (fy_final < fz_final) {
+        b = z_final;
+    }
+    else {
+        a = y;
+    }
+
+    // --- Ответ ---
+    std::cout << "a = " << a << "\tb = " << b << "\n";
+    double x_opt = (a + b) / 2.0;
+
+    std::cout << "Ответ:\n";
+    std::cout << "x* = " << x_opt << "\n";
+    std::cout << "f(x*) = " << f(x_opt) << "\n";
 
     return 0;
 }
