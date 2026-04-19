@@ -1,3 +1,63 @@
+//Метод золотого сечения
+#include <iostream>
+#include <cmath>
+#include <iomanip>
+using namespace std;
+
+// Функция
+double f(double x) {
+    return x * x - 6 * x + 13;
+}
+
+int main() {
+    setlocale(LC_ALL, "ru");
+    double a = 0;        // левая граница
+    double b = 10;       // правая граница
+    double eps = 0.5;    // точность
+
+    const double phi = (1 + sqrt(5)) / 2;
+    const double r = 2 - phi; // = 0.382
+
+    int k = 0;
+
+    cout << fixed << setprecision(2);
+    cout << "Начальный интервал: [" << a << ", " << b << "]\n";
+
+    while ((b - a) > eps) {
+        // вычисляем точки
+        double y = a + r * (b - a);
+        double z = a + b - y;
+
+        cout << "\nШаг " << k << ":\n";
+        cout << "y = " << y << "\tz = " << z << endl;
+        cout << "f(y) = " << f(y) << "\tf(z) = " << f(z) << endl;
+
+
+        // сравнение
+        if (f(y) <= f(z)) {
+            cout << "f(y) <= f(z) \tb = z\n";
+            b = z;
+        }
+        else {
+            cout << "f(y) > f(z) \ta = y\n";
+            a = y;
+        }
+        cout << "L = [" << a << " " << b << "]" << endl;
+        k++;
+    }
+
+    // итог
+    double x_min = (a + b) / 2;
+    double pogr = (b - a) / 2;
+
+    cout << "\nФинальный интервал: [" << a << ", " << b << "]\n";
+    cout << "Минимум x = " << x_min << " +- " << pogr << endl;
+    cout << "f(x) = " << f(x_min) << endl;
+
+    return 0;
+}
+
+
 #include <iostream>
 #include <cmath>
 #include <iomanip>
