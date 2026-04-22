@@ -1,98 +1,97 @@
-#include <iostream>
 #include <fstream>
 #include <vector>
-#include <sstream>
 #include <cmath>
+#include <iomanip>
 
 using namespace std;
 
-vector<vector<double>> mult(const vector<vector<double>>& A, const vector<vector<double>>& B)
-{
+typedef vector<double> vec;
+typedef vector<vec> mat;
+
+mat multiply(const mat& A, const mat& B) {
     int n = A.size();
-    vector<vector<double>> C(n, vector<double>(n, 0));
-    for (int i = 0; i < n; i++)
-        for (int j = 0; j < n; j++)
-            for (int k = 0; k < n; k++)
+    mat C(n, vec(n, 0));
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            for (int k = 0; k < n; k++) {
                 C[i][j] += A[i][k] * B[k][j];
+            }
+        }
+    }
     return C;
 }
 
-vector<double> multVec(const vector<vector<double>>& A, const vector<double>& x)
-{
-    int n = A.size();
-    vector<double> y(n, 0);
-    for (int i = 0; i < n; i++)
-        for (int j = 0; j < n; j++)
-            y[i] += A[i][j] * x[j];
-    return y;
+double trace(const mat& A) {
+    double sum = 0;
+    for (int i = 0; i < A.size(); i++) {
+        sum += A[i][i];
+    }
+    return sum;
 }
 
-double sp(const vector<vector<double>>& A)
-{
-    double s = 0;
-    for (int i = 0; i < A.size(); i++)
-        s += A[i][i];
-    return s;
+vec getEigenvector(const mat& A, double lambda) {
+    int n = A.size();
+    vec v(n, 1.0);
+
+    for (int iter = 0; iter < 1000; iter++) {
+        vec Av(n, 0);
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                Av[i] += A[i][j] * v[j];
+            }
+        }
+
+        double norm = 0;
+        for (double x : Av) norm += x * x;
+        norm = sqrt(norm);
+
+        for (int i = 0; i < n; i++) {
+            v[i] = Av[i] / norm;
+        }
+    }
+    return v;
 }
 
-int main()
-{
-    ifstream fin("vvod.txt");
-    ofstream fout("vivod.txt");
+int main() {
+    ifstream in("input.txt");
+    int n;
+    in >> n;
 
-    vector<vector<double>> A;
-    string line;
+    mat A(n, vec(n));
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            in >> A[i][j];
+        }
+    }
+    in.close();
 
-    while (getline(fin, line))
-    {
-        stringstream ss(line);
-        vector<double> row;
-        double val;
+    mat Ak = A;
+    mat Akp1 = multiply(A, A);
 
-        while (ss >> val)
-            row.push_back(val);
+    for (int k = 1; k < 50; k++) {
+        double Sp_Ak = trace(Ak);
+        double Sp_Akp1 = trace(Akp1);
 
-        if (!row.empty())
-            A.push_back(row);
+        double lambda = Sp_Akp1 / Sp_Ak;
+
+        Ak = Akp1;
+        Akp1 = multiply(Akp1, A);
     }
 
-    int n = A.size();
+    double Sp_Ak = trace(Ak);
+    double Sp_Akp1 = trace(Akp1);
+    double lambda = Sp_Akp1 / Sp_Ak;
 
+    vec eigenvector = getEigenvector(A, lambda);
 
-    int p = 3;
-    vector<vector<double>> Ak = A;
-
-    for (int i = 0; i < p; i++)
-        Ak = mult(Ak, Ak);
-    vector<vector<double>> Ak1 = mult(Ak, A);
-
-    double spk = sp(Ak);
-    double spk1 = sp(Ak1);
-
-    double lambda = spk1 / spk;
-
-    fout << "lambda = " << lambda << endl;
-
-    vector<double> x(n, 1);
-
-    for (int iter = 0; iter < 20; iter++)
-    {
-        vector<double> y = multVec(A, x);
-
-        double norm = fabs(y[0]);
-        for (int i = 1; i < n; i++)
-            if (fabs(y[i]) > norm)
-                norm = fabs(y[i]);
-
-        for (int i = 0; i < n; i++)
-            x[i] = y[i] / norm;
+    ofstream out("output.txt");
+    out << fixed << setprecision(10);
+    out << lambda << "\n";
+    for (int i = 0; i < n; i++) {
+        out << eigenvector[i];
+        if (i < n - 1) out << " ";
     }
+    out.close();
 
-    fout << "vector: ";
-    for (double v : x)
-        fout << v << " ";
-    fin.close();
-    fout.close();
-    cout << "OK";
     return 0;
 }
