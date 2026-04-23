@@ -72,3 +72,120 @@ while len(nums) > 1:
     nums.append(s)
 with open("output.txt", "w") as f:
     f.write("%.2f"%cost)
+
+4.7
+import random
+
+
+class ResidentialBuilding:
+    def __init__(self, address, floors, apartments, wall_material):
+        self.address = address
+        self.floors = floors
+        self.apartments = apartments
+        self.wall_material = wall_material
+
+    @property
+    def floors(self):
+        return self._floors
+
+    @floors.setter
+    def floors(self, value):
+        self._floors = max(1, int(value))
+
+    @property
+    def apartments(self):
+        return self._apartments
+
+    @apartments.setter
+    def apartments(self, value):
+        self._apartments = max(1, int(value))
+
+    def add_floor(self):
+        self.floors += 1
+
+    def remove_floor(self):
+        self.floors -= 1
+
+    def add_apartments(self, value):
+        self.apartments += value
+
+    def remove_apartments(self, value):
+        self.apartments -= value
+
+    def random_renovation(self):
+        apt_change = random.randint(1, 5)
+        if random.random() < 0.5:
+            self.add_apartments(apt_change)
+        else:
+            self.remove_apartments(apt_change)
+
+        floor_change = random.choice([-1, 1])
+        self.floors += floor_change
+
+    def merge(self, other_building):
+        if self.wall_material != other_building.wall_material:
+            raise ValueError("Different wall materials")
+        new_address = f"{self.address} и {other_building.address}"
+        new_floors = self.floors + other_building.floors
+        new_apartments = self.apartments + other_building.apartments
+        return ResidentialBuilding(new_address, new_floors, new_apartments, self.wall_material)
+
+    def get_occupancy_rate(self):
+        pass
+
+    def __add__(self, other):
+        if isinstance(other, (int, float)):
+            new_apartments = self.apartments + int(other)
+            return ResidentialBuilding(self.address, self.floors, new_apartments, self.wall_material)
+        return NotImplemented
+
+    def __lt__(self, other):
+        if not isinstance(other, ResidentialBuilding):
+            return NotImplemented
+        if self.floors != other.floors:
+            return self.floors < other.floors
+        if self.apartments != other.apartments:
+            return self.apartments < other.apartments
+        return self.address < other.address
+
+    def __str__(self):
+        return f"Residential building at {self.address} has {self.floors} floors and {self.apartments} apartments."
+
+
+class ApartmentBuilding(ResidentialBuilding):
+    def __init__(self, address, floors, apartments, wall_material, parking_spots=None):
+        super().__init__(address, floors, apartments, wall_material)
+        if parking_spots is None:
+            self.parking_spots = self.apartments // 2
+        else:
+            self.parking_spots = max(0, int(parking_spots))
+
+    def calculate_parking_ratio(self):
+        return self.parking_spots / self.apartments if self.apartments > 0 else 0
+
+    def random_renovation(self):
+        super().random_renovation()
+        park_change = random.randint(1, 5)
+        if random.random() < 0.5:
+            self.parking_spots += park_change
+        else:
+            self.parking_spots = max(0, self.parking_spots - park_change)
+----------------
+from abc import ABC, abstractmethod
+
+class ResidentialBuilding(ABC):
+    def __init__(self, apartments):
+        self.apartments = apartments
+
+    @abstractmethod
+    def get_occupancy_rate(self):
+        pass
+---
+class ApartmentBuilding(ResidentialBuilding):
+    def __init__(self, apartments, occupied_apartments):
+        super().__init__(apartments)
+        self.occupied_apartments = occupied_apartments
+
+    def get_occupancy_rate(self):
+        return (self.occupied_apartments / self.apartments) * 100
+------------------------
