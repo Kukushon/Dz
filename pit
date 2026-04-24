@@ -162,7 +162,7 @@ class ApartmentBuilding(ResidentialBuilding):
     def random_renovation(self):
         super().random_renovation()
         park_change = random.randint(1, 5)
-        if random.random() < 0.5:
+        if random.randint(1,2) == 1:
             self.parking_spots += park_change
         else:
             self.parking_spots = max(0, self.parking_spots - park_change)
