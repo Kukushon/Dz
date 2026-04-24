@@ -104,7 +104,7 @@ class ResidentialBuilding:
         self.floors += 1
 
     def remove_floor(self):
-        self._floors = max(1, int(value))
+        self._floors -= 1
 
     def add_apartments(self, value):
         self.apartments += value
