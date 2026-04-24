@@ -114,7 +114,7 @@ class ResidentialBuilding:
 
     def random_renovation(self):
         apt_change = random.randint(1, 5)
-        if random.random() < 0.5:
+        if random.randint(1,2) == 1:
             self.add_apartments(apt_change)
         else:
             self.remove_apartments(apt_change)
