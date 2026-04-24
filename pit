@@ -76,7 +76,6 @@ with open("output.txt", "w") as f:
 4.7
 import random
 
-
 class ResidentialBuilding:
     def __init__(self, address, floors, apartments, wall_material):
         self.address = address
@@ -86,19 +85,19 @@ class ResidentialBuilding:
 
     @property
     def floors(self):
-        return self._floors
+        return self.floors
 
     @floors.setter
     def floors(self, value):
-        self._floors = max(1, int(value))
+        self.floors = max(1, int(value))
 
     @property
     def apartments(self):
-        return self._apartments
+        return self.apartments
 
     @apartments.setter
     def apartments(self, value):
-        self._apartments = max(1, int(value))
+        self.apartments = max(1, int(value))
 
     def add_floor(self):
         self.floors += 1
@@ -130,12 +129,13 @@ class ResidentialBuilding:
         new_apartments = self.apartments + other_building.apartments
         return ResidentialBuilding(new_address, new_floors, new_apartments, self.wall_material)
 
+    @abstracctmetod
     def get_occupancy_rate(self):
         pass
 
     def __add__(self, other):
-		    new_apartments = self.apartments + int(other)
-		    return ResidentialBuilding(self.address, self.floors, new_apartments, self.wall_material)
+        new_apartments = self.apartments + int(other)
+        return ResidentialBuilding(self.address, self.floors, new_apartments, self.wall_material)
 
     def __lt__(self, other):
         if self.floors != other.floors:
@@ -149,15 +149,19 @@ class ResidentialBuilding:
 
 
 class ApartmentBuilding(ResidentialBuilding):
-    def __init__(self, address, floors, apartments, wall_material, parking_spots=None):
+    def __init__(self, address, floors, apartments, wall_material, occupied_apartments, parking_spots=None):
         super().__init__(address, floors, apartments, wall_material)
+        self.occupied_apartments = occupied_apartments
         if parking_spots is None:
             self.parking_spots = self.apartments // 2
         else:
             self.parking_spots = max(0, int(parking_spots))
 
+    def get_occupancy_rate(self):
+        return (self.occupied_apartments / self.apartments) * 100
+    
     def calculate_parking_ratio(self):
-				return self.parking_spots / self.apartments
+        return self.parking_spots / self.apartments
 
     def random_renovation(self):
         super().random_renovation()
@@ -166,22 +170,3 @@ class ApartmentBuilding(ResidentialBuilding):
             self.parking_spots += park_change
         else:
             self.parking_spots = max(0, self.parking_spots - park_change)
-----------------
-from abc import ABC, abstractmethod
-
-class ResidentialBuilding(ABC):
-    def __init__(self, apartments):
-        self.apartments = apartments
-
-    @abstractmethod
-    def get_occupancy_rate(self):
-        pass
----
-class ApartmentBuilding(ResidentialBuilding):
-    def __init__(self, apartments, occupied_apartments):
-        super().__init__(apartments)
-        self.occupied_apartments = occupied_apartments
-
-    def get_occupancy_rate(self):
-        return (self.occupied_apartments / self.apartments) * 100
-------------------------
