@@ -157,7 +157,10 @@ class ApartmentBuilding(ResidentialBuilding):
             self.parking_spots = max(0, int(parking_spots))
 
     def calculate_parking_ratio(self):
-        return self.parking_spots / self.apartments if self.apartments > 0 else 0
+        if self.apartments > 0:
+				    return self.parking_spots / self.apartments
+				else:
+				    return 0
 
     def random_renovation(self):
         super().random_renovation()
