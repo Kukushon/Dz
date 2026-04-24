@@ -134,10 +134,8 @@ class ResidentialBuilding:
         pass
 
     def __add__(self, other):
-        if isinstance(other, (int, float)):
-            new_apartments = self.apartments + int(other)
-            return ResidentialBuilding(self.address, self.floors, new_apartments, self.wall_material)
-        return NotImplemented
+		    new_apartments = self.apartments + int(other)
+		    return ResidentialBuilding(self.address, self.floors, new_apartments, self.wall_material)
 
     def __lt__(self, other):
         if not isinstance(other, ResidentialBuilding):
