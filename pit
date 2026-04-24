@@ -138,8 +138,6 @@ class ResidentialBuilding:
 		    return ResidentialBuilding(self.address, self.floors, new_apartments, self.wall_material)
 
     def __lt__(self, other):
-        if not isinstance(other, ResidentialBuilding):
-            return NotImplemented
         if self.floors != other.floors:
             return self.floors < other.floors
         if self.apartments != other.apartments:
