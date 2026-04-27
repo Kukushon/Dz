@@ -27,7 +27,7 @@ def older30(year,month,day):
             return True
         return False
 
-df_bank['older30'] = df_bank[['Year','Month']].apply(lambda x: older30(x[0], x[1], x[2]), axis=1)
+df_bank['older30'] = df_bank[['Year','Month', 'Day']].apply(lambda x: older30(x[0], x[1], x[2]), axis=1)
 df_older30 = df_bank[df_bank['older30'] == True]
 print (f'средний доход клиентов старше 30 лет: {df_older30.Income.mean()}\n')
     
@@ -40,7 +40,7 @@ df_bank['Loan_Balance_norm']=(df_bank['Loan_Balance'] - df_bank['Loan_Balance'].
 df_bank.pop('Date')
 df_bank.pop('Loan_Balance')
 df_bank = pd.get_dummies(df_bank, columns=['Profession'])
-df_bank.to_sv(bank_data_new.csv)
+df_bank.to_csv('bank_data_new.csv')
 -------------------------------------
 
 tr_mcc_codes=pd.read_csv('tr_mcc_codes.csv',sep=';')
