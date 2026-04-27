@@ -1,14 +1,55 @@
-df_bank['older30'] = df_bank[['Year','Month', apply(lambda x: older30(x[0], x[1], x[2]), axis-1)
-df_older30 = df_bank[df_bank[ older30 ] - True
-print (f' средний доход клиентов старше 30 лет: (df_older30. Income.mean() n')
-df_ by_profession = df_bank.groupby"Profession')[ Loan_Balance'| agg(['count,"sum])
-df_by_profession[ средняя сумма кредита"] = df_by_profession[" sum'] / df_by_profession|' count" |
-print (df_by_profession,
-"\n")
-df_bank-pop"Date')
-df_bank.pop("Loan_Balance')
-df_bank = pd.get_dummies(df_bank, columns-["Profession'])
-df_bank. to_sv(bank_data_new.csv')
+s = pd.Series(data=['13', 2, 77.1, 'red', 8, -341, 12.42, '34', 19.02, 72, 1, 87, 12.03, 'green', 0.05], 
+              index=range(6, 36, 2))
+s1=pd.Series(data=s.values,index=range(5,20))
+v=s1[s1.apply(lambda x: isinstance(x,int))]
+d=np.var(v, ddof=0).round(2)
+print(s1, "\n",v, "\n",d)
+------------------------
+
+np.random.seed(242)
+s = pd.Series(np.random.normal(size=100))
+print(s)
+s=pd.Series((s**3).values, index=s.index*3)
+print("\n",s)
+sum=s[(s<2.6)&(s.index%2==0)].sum()
+c=(s>0).sum()
+print(sum, ", ",c)
+--------------------
+
+df=pd.read_csv('titanic.csv')
+def age_category(age):
+    if age<18:
+            return "дети"
+    elif age<60:
+        return "взрослые"
+    return "пенсионеры"
+df['Возрастная_категория']=df['Age'].apply(age_category)
+survival_by_age = df.groupby('Возрастная_категория')['Survived'].agg(['count','sum'])
+survival_by_age['Доля_выживших']=survival_by_age['sum']/survival_by_age['count']*100
+print(survival_by_age['Доля_выживших'],"\n")
+
+df = df.rename(columns={'Pclass':'Класс_билета','Sex':'Пол'})
+survival_by_pclass = df.groupby('Класс_билета')['Survived'].agg(['count','sum'])
+survival_by_pclass['Доля_выживших']=survival_by_pclass['sum']/survival_by_pclass['count']*100
+print(survival_by_pclass['Доля_выживших'],"\n")
+
+survival_by_sex = df.groupby('Пол')['Survived'].agg(['count','sum'])
+survival_by_sex['Доля_выживших']=survival_by_sex['sum']/survival_by_sex['count']*100
+print(survival_by_sex['Доля_выживших'])
+----------------------------------
+
+df_bank=pd.read_csv('bank_data.csv')
+
+print(df_bank.head(5))
+print(df_bank.shape)
+print(f'общее число клиентов банка:{len(df_bank)}')
+print(f'количество уникальных профессий:{df_bank['Profession'].nunique()}')
+
+na_per_column=df_bank.isna().sum()
+print("\nколичество пропусков в каждом столбце",na_per_column)
+
+df_bank['Income']=df_bank['Income'].fillna(df_bank.Income.mean())
+print(df_bank.head(5))
 ----------------------------
 
 df_bank['Date'] = pd.to_datetime(df_bank['Date'])
@@ -66,7 +107,7 @@ tr_types = pd.read_csv("tr_types.csv", sep=';')
 transactions = pd.read_csv("transactions.csv", sep=',',nrows = 1000000)
 gender_train = pd.read_csv("gender_train.csv", sep=',')
 
-df = pd.merge(transactions, gender_train, on='customre_id', how='left')
+df = pd.merge(transactions, gender_train, on='customer_id', how='left')
 df = pd.merge(df, tr_mcc_codes, on= 'mcc_code', how='inner')
 df = pd.merge(df, tr_types, on='tr_type', how='inner')
 del tr_mcc_codes
@@ -74,7 +115,6 @@ del tr_types
 del gender_train
 print (f"размер: {df.shape}")
 df[['tr_day', 'tr_time']] = df['tr_datetime'].str.split(' ', expand=True)
---------------------------------------
 
 expenses = df[df['amount'] < 0]['amount']
 expense_buckets = pd.qcut(expenses, q=5, labels=['Very High', 'High', 'Middle', 'Low', 'Very Low'])
@@ -85,19 +125,17 @@ df['amount_bucket'] = df['amount_bucket'].astype('category')
 df['amount_bucket'] = df['amount_bucket'].cat.add_categories(['Income'])
 df['amount_bucket'] = df['amount_bucket'].fillna('Income')
 print(df[['amount', 'amount_bucket']])
-------------------------------------------
 
 df['tr_hour'] = df['tr_time'].str.split(':').str[0]
-print(df[['tr_hour', 'tr_tie']].head(10))
-------------------------------------------
+print(df[['tr_hour', 'tr_time']].head(10))
 
-pivot = pd.pivot_table(df, index='tr_hour', columns='amount_buscket', values='gender', aggfunc='mean', observed=False)
+pivot = pd.pivot_table(df, index='tr_hour', columns='amount_bucket', values='gender', aggfunc='mean', observed=False)
 print(pivot)
 -----------------------------------------
 
 def plot_pivot_table(pivot_table):
     plt.figure(figsize=(12,8))
-    sns.heatmap(pivot_table,annot True, fmt='f', cmap='Blues',linewidths=0.5, cbar_kws={'label':'процент мужских транзакций'})
+    sns.heatmap(pivot_table, annot=True, fmt='f', cmap='viridis',linewidths=1, cbar_kws={'label':'процент мужских транзакций'})
 
     plt.title('Тепловая карта')
     plt.xlabel('')
@@ -110,11 +148,11 @@ plot_pivot_table(pivot)
 
 df['tr_day'] = df['tr_day'].astype(int)
 mcc_counts = df['mcc_code'].value_counts().to_dict()
-mCc_60 = [mcc for mcc, count in mcc_counts.items() if count > 60000]
-filtered_df = df[df['mcc code'].isin(mcc_60)]
+mcc_60 = [mcc for mcc, count in mcc_counts.items() if count > 60000]
+filtered_df = df[df['mcc_code'].isin(mcc_60)]
 print(f'МСС коды, которые встретилисы более чем 60000 раз: {mcc_60}')
 
-grouped_df = filtered_df.groupby('tr_day', 'mcc_code'])['amount'].mean().reset_index()
+grouped_df = filtered_df.groupby(['tr_day', 'mcc_code'])['amount'].mean().reset_index()
 grouped_df = grouped_df.rename(columns={'amount':'avg_amount'})
 print (grouped_df)
 ----------------------------------------------
@@ -123,16 +161,16 @@ grouped_series = filtered_df.groupby(['tr_day','mcc_code'])['amount'].mean()
 pivot_data = grouped_series.unstack()
 plt.figure(figsize = (15,8))
 for column in pivot_data.columns:
-    plt.plot(pivot_data.index,pivot_data[column], linewidth=1.5,markersiize=3,label=column)
+    plt.plot(pivot_data.index,pivot_data[column], linewidth=1.5,markersize=3,label=column)
 plt.xlabel('день')
 plt.ylabel('средняя сумма')
 plt.title('зависимость срдних сумм по МСС кодам')
 plt.legend(bbox_to_anchor=(0.9, 1), loc='upper left', fontsize=10)
-plt.tight_layot()
+plt.tight_layout()
 plt.show()
 -----------------------------------------------
 
-filtered_df.loc[:, 'mcc description'] = filtered_df['mcc_description'].astype(str)
+filtered_df.loc[:, 'mcc_description'] = filtered_df['mcc_description'].astype(str)
 finance_df = filtered_df[filtered_df['mcc_description'].str.contains('Финансовые институты', na=False)]
 print (f"MCC-коды связаные с финансовыми институтами: {finance_df['mcc_code'].unique()}")
 
@@ -147,6 +185,9 @@ print(f"Звонки с использованием телефонов, счи�
 -----------------------------------------------
 
 df = pd.read_csv('winemag-data-130k-v2.csv', on_bad_lines='skip')
+df['price'] = pd.to_numeric(df['price'], errors='coerce')
+df['points'] = pd.to_numeric(df['points'], errors='coerce')
+df_clean = df.dropna(subset=['price', 'points'])
 print(df.tail(5))
 -----------------------------------------------
 
