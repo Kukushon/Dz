@@ -166,3 +166,7 @@ plt.ylabel('количество вин')
 plt.xticks(rotation=45,ha='right')
 plt.tight_layot()
 plt.show()
+
+#dfl price'] - pd. to numeric (afl price" ), errors- coerce")
+#df[ 'points"/ - pd.to numerie(df[ points"], errors-"coerce")
+#df_clean - df. dropna(subset-['price", "points ])
