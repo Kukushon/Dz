@@ -1,0 +1,72 @@
+#include <iostream>
+#include <fstream>
+#include <cmath>
+#include <string>
+
+using namespace std;
+
+double f(double x, double y) {
+    return y + 2 * x - 3;
+}
+
+// точное решение
+double exact(double x) {
+    return exp(x) - 2 * x + 1;
+}
+
+// RK2
+double rk2_step(double x, double y, double h) {
+    double k1 = f(x, y);
+    double k2 = f(x + h / 2, y + h / 2 * k1);
+    return y + h * k2;
+}
+
+// формат с запятой
+string fmt(double v) {
+    string s = to_string(v);
+
+    while (!s.empty() && s.back() == '0') s.pop_back();
+    if (!s.empty() && s.back() == '.') s.pop_back();
+
+    for (char& c : s)
+        if (c == '.') c = ',';
+
+    return s;
+}
+
+void solve(double h, ofstream& fout) {
+    double x = 0;
+    double y = 2; // y(0)=2
+
+    int steps = (int)(5.0 / h);
+
+    fout << "h = " << h << "\n";
+    fout << "x\t y\t u\t delta\n";
+
+    for (int i = 0; i <= steps; i++) {
+
+        double y_true = exact(x);
+        double u = y;
+        double delta = fabs(u - y_true);
+
+        fout << fmt(x) << "\t"
+            << fmt(y_true) << "\t"
+            << fmt(u) << "\t"
+            << fmt(delta) << "\n";
+
+        y = rk2_step(x, y, h);
+        x += h;
+    }
+
+    fout << "\n\n";
+}
+
+int main() {
+    ofstream fout("output.txt");
+
+    solve(0.1, fout);
+    solve(0.2, fout);
+
+    fout.close();
+    return 0;
+}
