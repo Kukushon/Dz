@@ -52,23 +52,9 @@ void normalize(Vector& x) {
         v /= norm;
 }
 
-double cLambda(const Matrix& A, const Vector& x) {
-    Vector Ax = multiply(A, x);
-
-    double num = 0, den = 0;
-    for (int i = 0; i < x.size(); i++) {
-        num += Ax[i] * x[i];
-        den += x[i] * x[i];
-    }
-
-    return num / den;
-}
-
 int main() {
     ifstream in("input.txt");
     ofstream out("output.txt");
-
-    double eps = 1e-6;
     
     int n;
     in >> n;
@@ -80,17 +66,43 @@ int main() {
 
     Vector y(n, 1.0);
 
-    int p = 3;
-    Matrix A_p = pMatrix(A, p);
 
-    for (int i = 0; i < 20; i++) {
-        y = multiply(A_p, y);
+    double lambda_old = 0;
+    double lambda_new = 0;
+    double eps = 1e-6;
+
+    Matrix B = A;
+    int p = 0;
+
+    while (true)
+    {
+        y = multiply(B, y);
         normalize(y);
+
+        Vector Ay = multiply(A, y);
+
+        lambda_new = 0;
+        double denom = 0;
+
+        for (int i = 0; i < y.size(); i++)
+        {
+            lambda_new += Ay[i] * y[i];
+            denom += y[i] * y[i];
+        }
+
+        lambda_new /= denom;
+
+        if (fabs(lambda_new - lambda_old) < eps)
+            break;
+
+        lambda_old = lambda_new;
+
+        Matrix B_next = multiplyMatrix(B, B);
+        B = B_next;
+        p++;
     }
 
-    double lambda = cLambda(A, y);
-
-    out << "lambda: " << lambda << endl;
+    out << "lambda: " << lambda_new << endl;
     out << "vector:" << endl;
 
     for (double v : y)
