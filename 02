@@ -67,7 +67,7 @@ int main() {
     }
 
     out << "Lambda = " << lambda << endl;
-    out << "x:" << endl;
+    out << "Vector: ";
     for (double v : y)
         out << v << endl;
 
