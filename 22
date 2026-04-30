@@ -62,3 +62,69 @@ int main() {
     fout.close();
     return 0;
 }
+
+
+#include <iostream>
+#include <fstream>
+#include <cmath>
+#include <string>
+
+using namespace std;
+
+double f(double x, double y) {
+    return y / x + x * cos(x);
+}
+
+double exact(double x) {
+    return x * sin(x);
+}
+
+double rk2_step(double x, double y, double h) {
+    double y_mid = y + 0.5 * h * f(x, y);
+    double y_next = y + h * f(x + 0.5 * h, y_mid);
+    return y_next;
+}
+
+string fmt(double v) {
+    string s = to_string(v);
+    while (!s.empty() && s.back() == '0') s.pop_back();
+    if (!s.empty() && s.back() == '.') s.pop_back();
+    for (char& c : s)
+        if (c == '.') c = ',';
+    return s;
+}
+
+void solve(double h, ofstream& fout) {
+    double x = 1.0;
+    double y = sin(1.0);
+
+    int steps = (int)(5.0 / h);
+
+    fout << "h = " << h << "\n";
+    fout << "x\t y_прибл\t y_точн\t delta\n";
+
+    for (int i = 0; i <= steps; i++) {
+        double y_true = exact(x);
+        double delta = fabs(y - y_true);
+
+        fout << fmt(x) << "\t"
+            << fmt(y) << "\t"
+            << fmt(y_true) << "\t"
+            << fmt(delta) << "\n";
+
+        y = rk2_step(x, y, h);
+        x += h;
+    }
+
+    fout << "\n\n";
+}
+
+int main() {
+    ofstream fout("output.txt");
+
+    solve(0.1, fout);
+    solve(0.2, fout);
+
+    fout.close();
+    return 0;
+}
