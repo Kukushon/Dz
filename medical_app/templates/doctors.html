@@ -1,0 +1,13 @@
+<h2>Врачи</h2>
+
+<form action="/doctors/add" method="post">
+    <input name="name" placeholder="Имя">
+    <input name="specialty" placeholder="Специальность">
+    <button type="submit">Добавить</button>
+</form>
+
+<ul>
+{% for d in doctors %}
+    <li>{{d.id}} | {{d.name}} | {{d.specialty}}</li>
+{% endfor %}
+</ul>

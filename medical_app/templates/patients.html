@@ -1,0 +1,14 @@
+<h2>Пациенты</h2>
+
+<form action="/patients/add" method="post">
+    <input name="name" placeholder="Имя">
+    <input name="age" placeholder="Возраст">
+    <input name="diagnosis" placeholder="Диагноз">
+    <button type="submit">Добавить</button>
+</form>
+
+<ul>
+{% for p in patients %}
+    <li>{{p.id}} | {{p.name}} | {{p.age}} | {{p.diagnosis}}</li>
+{% endfor %}
+</ul>
